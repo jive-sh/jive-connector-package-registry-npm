@@ -1,0 +1,8 @@
+node_modules
+dist
+.DS_Store
+package.schema.json
+# The local Convex deployment `codegen` and `audit` run against
+.convex
+.env.local
+example/convex/_generated
