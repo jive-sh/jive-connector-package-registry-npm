@@ -28,22 +28,27 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "action",
         "internal",
         {
-          account: { token: string };
-          oneTimePassword?: string;
+          account: {
+            secondFactor: { secret: string; type: "totp" };
+            token: string;
+          };
           packageName: string;
         },
         | { status: "created"; version: string }
         | { status: "alreadyExists" }
-        | {
-            approval?: { pageUrl: string; resultUrl: string };
-            status: "secondFactorRequired";
-          },
+        | { status: "maintainedByAnotherAccount" },
         Name
       >;
       listTrustedPublishers: FunctionReference<
         "action",
         "internal",
-        { account: { token: string }; packageName: string },
+        {
+          account: {
+            secondFactor: { secret: string; type: "totp" };
+            token: string;
+          };
+          packageName: string;
+        },
         Array<{
           claims: {
             environment?: string;
@@ -52,6 +57,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
             workflowFile: string;
           };
           id: string;
+          status: "validated" | "unvalidated";
         }>,
         Name
       >;
@@ -66,8 +72,10 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "action",
         "internal",
         {
-          account: { token: string };
-          oneTimePassword?: string;
+          account: {
+            secondFactor: { secret: string; type: "totp" };
+            token: string;
+          };
           packageName: string;
           publisher: {
             environment?: string;
@@ -76,12 +84,21 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
             workflowFile: string;
           };
         },
-        | { status: "registered" }
-        | { id: string; status: "alreadyRegistered" }
-        | {
-            approval?: { pageUrl: string; resultUrl: string };
-            status: "secondFactorRequired";
-          },
+        { status: "registered" } | { id: string; status: "alreadyRegistered" },
+        Name
+      >;
+      removeTrustedPublisher: FunctionReference<
+        "action",
+        "internal",
+        {
+          account: {
+            secondFactor: { secret: string; type: "totp" };
+            token: string;
+          };
+          id: string;
+          packageName: string;
+        },
+        { status: "removed" } | { status: "notFound" },
         Name
       >;
     };
